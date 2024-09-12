@@ -4,6 +4,8 @@ import reframe.utility.sanity as sn
 
 @rfm.simple_test
 class namd_check(rfm.RunOnlyRegressionTest):
+      variant= parameter(['v100_8', 'a100_8'])
+
       @rfm.run_after('init')
       def setting_variables(self):
 
@@ -18,7 +20,7 @@ class namd_check(rfm.RunOnlyRegressionTest):
         
         self.modules=['namd']
         #/2.13/cuda10-verbs-smp-icc17
-        self.prerun_cmds = ['module list','which namd2','hostname','echo $MODULEPATH']
+        self.prerun_cmds = ['module list','which namd2','hostname','echo $MODULEPATH','./env.sh']
         #['export SLURM_CPU_BIND_TYPE=sockets','export SLURM_CPU_BIND_VERBOSE=verbose']
  
         self.executable='namd2'
@@ -32,9 +34,11 @@ class namd_check(rfm.RunOnlyRegressionTest):
         self.num_tasks_per_node = 1
         self.num_gpus_per_node=8
         self.num_cpus_per_task=8
-        self.extra_resources = {'constraint': {'type': 'v100'}}
-
-     
+        if self.variant == 'v100_8' :
+           self.extra_resources = {'constraint': {'type': 'v100,gpu_ai'}}
+        elif self.variant == 'a100_8' :
+           self.extra_resources = {'constraint': {'type': 'a100,8gpus'}}
+           self.tags = { 'a100'}
         self.sanity_patterns = sn.assert_eq(sn.count(sn.extractall(r'TIMING: (?P<step_num>\S+)  CPU:', self.stdout, 'step_num')),25)
         
         self.perf_patterns = {       
@@ -47,7 +51,7 @@ class namd_check(rfm.RunOnlyRegressionTest):
                                             },
                             }
         
-        self.tags = {'gpu','acceptance'}
+        self.tags = {'namd','gpu',self.variant,'acceptance'}
 
         
         # initials or email of the maintainer    

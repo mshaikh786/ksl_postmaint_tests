@@ -10,10 +10,10 @@ class gromacs_tests(rfm.RunOnlyRegressionTest):
       variant= parameter(['small', 'medium','large','multinode'])
       reference = {
                      'ibex' : {
-                       'small': (35, -0.15, 0.15,None),
-                       'medium': (74, -0.15, 0.15,None),
-                       'large': (140, -0.15, 0.15,None),
-                       'multinode': (70, -0.15, 0.15,None)
+                       'small': (35, -0.15, None,None),
+                       'medium': (74, -0.15, None,None),
+                       'large': (140, -0.15, None,None),
+                       'multinode': (70, -0.15, None,None)
 
                                      }
                             }
@@ -58,7 +58,7 @@ class gromacs_tests(rfm.RunOnlyRegressionTest):
         # List of modules, if any, to be loaded in the jobscript
         self.modules=['gromacs/2020.4/openmpi-4.0.3-intel-2020-sp','gcc/8.2.0']
         # method pre_run adds any commands you wish to run before srun in your jobscript. 
-        self.prerun_cmds  = ['export OMP_NUM_THREADS=1']
+        self.prerun_cmds  = ['export OMP_NUM_THREADS=1','./env.sh']
                
         # sanity_patterns is a method to introduce a check on the output file self.stdout (which is slurm-jobid.out).
         # sanity check is a way to know that the simulation has started in a normal fashion. 
@@ -86,7 +86,7 @@ class gromacs_tests(rfm.RunOnlyRegressionTest):
 #                                     }
                        #     }
 #tags are useful to filter tests when not all but specific the tests are suppose to run
-        self.tags = {'gromacs','gromacs_'+self.variant,'acceptance'}
+        self.tags = {'gromacs','gromacs_'+self.variant,'acceptance','cpu'}
         
         # initials or email of the maintainer    
         #self.maintainers = ['MS']

@@ -7,8 +7,8 @@ class openfoam_test(rfm.RunOnlyRegressionTest):
       variant= parameter(['openfoam_runtime'])
       maintainers = ['passant.hafez@kaust.edu.sa']
       descr = 'running OpenFOAM case'
-      tags = {'openfoam','of'}
-      sourcesdir = 'src/openfoam'
+      tags = {'openfoam','of','cpu'}
+      sourcesdir = '../src/openfoam'
       valid_systems = ['ibex:batch']
 #      valid_prog_environs = ['gpustack_openmpi']
       valid_prog_environs = ['cpustack_builtin']
@@ -26,6 +26,7 @@ class openfoam_test(rfm.RunOnlyRegressionTest):
 
       @rfm.run_after('init')
       def setting_parameters(self):
+           self.prerun_cmds = ['./env.sh']
            self.executable = 'mpirun -n 1 blockMesh && mpirun -n 1 decomposePar && time mpirun -n 32 icoFoam -parallel'
            self.sanity_patterns = sn.assert_found(r'^Finalising parallel run', self.stdout)
            self.perf_patterns = {
